@@ -21,5 +21,6 @@ android {
 }
 
 dependencies {
-    compile project(':library')
+    compile project(':libraries/ProgressBar')
+    compile project(':libraries/SlidingMenu')
 }

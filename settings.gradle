@@ -1,2 +1,3 @@
-include ':library'
+include ':libraries/ProgressBar'
+include ':libraries/SlidingMenu'
 include ':sample'
