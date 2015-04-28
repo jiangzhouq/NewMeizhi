@@ -4,8 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/bitmap_dark_bg"
     tools:context=".CircularProgressBarSample">
@@ -33,14 +31,23 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentTop="true">
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:src="@drawable/hugh"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            app:border_width="2dp"
+            app:border_color="@android:color/white"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textSize="36sp"
+            android:textSize="32sp"
             android:textColor="#cd5c5c"
-            android:typeface="serif"
-            android:text="ForBeauty"/>
+            android:typeface="serif"/>
     </RelativeLayout>
     <TextView
         android:id="@+id/time"
