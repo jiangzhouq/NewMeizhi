@@ -1,4 +1,4 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 19
@@ -19,9 +19,13 @@ android {
         }
     }
 }
-
+repositories {
+    mavenCentral()
+}
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':libraries/ProgressBar')
     compile project(':libraries/SlidingMenu')
     compile project(':libraries/circleimageview')
+    compile 'com.appyvet:materialrangebar:1.0'
 }
