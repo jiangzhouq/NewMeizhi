@@ -80,6 +80,7 @@ public class CircularProgressBarSample extends Activity {
     private BluetoothService.BlueBinder mBlueBinder;
     private BluetoothService mBlueService;
     private ServiceConnection mBlueConn ;
+    private int mSoundFlag = 0;
     /*
      * (non-Javadoc)
      *
@@ -179,7 +180,7 @@ public class CircularProgressBarSample extends Activity {
                         }, 0.0f, mUserTime*1000);
                         mState = STATE_RUNNING;
                         if (soundPool != null){
-                            soundPool.play(1,1,1,0,-1,1);
+                            mSoundFlag = soundPool.play(1,1,1,0,-1,1);
                         }
                         mStartButton.setImageResource(R.drawable.pause_src);
                         mStartTextView.setText(R.string.btn_pause);
@@ -195,14 +196,14 @@ public class CircularProgressBarSample extends Activity {
                         mStartButton.setImageResource(R.drawable.start_src);
                         mStartTextView.setText(R.string.btn_start);
                         if (soundPool != null){
-                            soundPool.stop(1);
+                            soundPool.pause(mSoundFlag);
                         }
                         mState = STATE_PAUSING;
                         break;
                     case STATE_PAUSING:
                         mProgressBarAnimator.resume();
                         if (soundPool != null){
-                            soundPool.play(1, 1, 1, 0, -1, 1);
+                            soundPool.resume(mSoundFlag);
                         }
                         mStartButton.setImageResource(R.drawable.pause_src);
                         mStartTextView.setText(R.string.btn_pause);
@@ -225,7 +226,11 @@ public class CircularProgressBarSample extends Activity {
                 mProgressBarAnimator.cancel();
                 mState = STATE_END;
                 finalProgress = 1.0f;
-                soundPool.stop(1);
+                soundPool.stop(mSoundFlag);
+                mEndButton.setImageResource(R.drawable.stop_d);
+                mState = STATE_END;
+                mEndTextView.setTextColor(Color.rgb(124, 124, 124));
+                mEndButton.setEnabled(false);
                 animate(mHoloCircularProgressBar, new AnimatorListener() {
                     @Override
                     public void onAnimationCancel(final Animator animation) {
@@ -234,10 +239,7 @@ public class CircularProgressBarSample extends Activity {
 
                     @Override
                     public void onAnimationEnd(final Animator animation) {
-                        mState = STATE_END;
-                        mEndButton.setImageResource(R.drawable.stop_d);
-                        mEndTextView.setTextColor(Color.rgb(124, 124, 124));
-                        mEndButton.setEnabled(false);
+
                     }
 
                     @Override
@@ -405,7 +407,7 @@ public class CircularProgressBarSample extends Activity {
             final float progress, final int duration) {
 
         mProgressBarAnimator = ObjectAnimator.ofFloat(progressBar, "progress", progress);
-        mProgressBarAnimator.setDuration(duration);
+        mProgressBarAnimator.setDuration(duration/60);
 
         mProgressBarAnimator.addListener(new AnimatorListener() {
 
@@ -436,6 +438,9 @@ public class CircularProgressBarSample extends Activity {
                 float lastTime = (animation.getDuration() - animation.getCurrentPlayTime())/1000;
                 mTime.setText(makeTime(lastTime == 0.0f ? mUserTime : lastTime));
                 progressBar.setProgress(1.0f - (Float) animation.getAnimatedValue());
+                if(lastTime == 0.0f){
+                    soundPool.play(2,1,1,0,3,1);
+                }
             }
         });
         progressBar.setMarkerProgress(progress);
