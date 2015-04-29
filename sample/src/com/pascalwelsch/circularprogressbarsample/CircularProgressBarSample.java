@@ -6,18 +6,16 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothSocket;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.ParcelUuid;
+import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -32,13 +30,8 @@ import android.widget.TextView;
 import com.appyvet.rangebar.RangeBar;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.pascalwelsch.holocircularprogressbar.HoloCircularProgressBar;
-import org.w3c.dom.Text;
 
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -83,8 +76,10 @@ public class CircularProgressBarSample extends Activity {
     private SlidingMenu menu;
     final AlphaAnimation zeroAnimation = new AlphaAnimation(1, 0);
     final AlphaAnimation oneAnimation = new AlphaAnimation(0, 1);
-
-    private BluetoothDevice mDevice = null;
+    private  TextView blueToothState;
+    private BluetoothService.BlueBinder mBlueBinder;
+    private BluetoothService mBlueService;
+    private ServiceConnection mBlueConn ;
     /*
      * (non-Javadoc)
      *
@@ -121,7 +116,6 @@ public class CircularProgressBarSample extends Activity {
         mRangeBar.setOnRangeBarChangeListener( new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int i, int i2, String s, String s2) {
-                Log.d("qiqi", "i:" + i + " i2:" + i2 + " s:" + s + " s2:" + s2);
                 mUserTime = 60 * Integer.parseInt(s2);
                 mTime.setText(makeTime(mUserTime));
             }
@@ -184,21 +178,32 @@ public class CircularProgressBarSample extends Activity {
                             }
                         }, 0.0f, mUserTime*1000);
                         mState = STATE_RUNNING;
+                        if (soundPool != null){
+                            soundPool.play(1,1,1,0,-1,1);
+                        }
                         mStartButton.setImageResource(R.drawable.pause_src);
                         mStartTextView.setText(R.string.btn_pause);
                         mEndButton.setImageResource(R.drawable.stop_src);
                         mEndTextView.setTextColor(Color.LTGRAY);
                         mEndButton.setEnabled(true);
-                        setDeviceOn(true);
+                        if(mBlueBinder != null){
+                            mBlueBinder.start(mUserTime);
+                        }
                         break;
                     case STATE_RUNNING:
                         mProgressBarAnimator.pause();
                         mStartButton.setImageResource(R.drawable.start_src);
                         mStartTextView.setText(R.string.btn_start);
+                        if (soundPool != null){
+                            soundPool.stop(1);
+                        }
                         mState = STATE_PAUSING;
                         break;
                     case STATE_PAUSING:
                         mProgressBarAnimator.resume();
+                        if (soundPool != null){
+                            soundPool.play(1, 1, 1, 0, -1, 1);
+                        }
                         mStartButton.setImageResource(R.drawable.pause_src);
                         mStartTextView.setText(R.string.btn_pause);
                         mState = STATE_RUNNING;
@@ -220,6 +225,7 @@ public class CircularProgressBarSample extends Activity {
                 mProgressBarAnimator.cancel();
                 mState = STATE_END;
                 finalProgress = 1.0f;
+                soundPool.stop(1);
                 animate(mHoloCircularProgressBar, new AnimatorListener() {
                     @Override
                     public void onAnimationCancel(final Animator animation) {
@@ -230,7 +236,7 @@ public class CircularProgressBarSample extends Activity {
                     public void onAnimationEnd(final Animator animation) {
                         mState = STATE_END;
                         mEndButton.setImageResource(R.drawable.stop_d);
-                        mEndTextView.setTextColor(Color.rgb(124,124,124));
+                        mEndTextView.setTextColor(Color.rgb(124, 124, 124));
                         mEndButton.setEnabled(false);
                     }
 
@@ -242,7 +248,9 @@ public class CircularProgressBarSample extends Activity {
                     public void onAnimationStart(final Animator animation) {
                     }
                 }, 1.0f, 500);
-                setDeviceOn(false );
+                if(mBlueBinder != null){
+                    mBlueBinder.stop();
+                }
             }
         });
 
@@ -250,17 +258,7 @@ public class CircularProgressBarSample extends Activity {
         mBlingButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if(mEnableBling){
-//                    mEnableBling = false;
-//                    mBlingButton.setImageResource(R.drawable.bling_off_src);
-//                    soundPool.load(CircularProgressBarSample.this, R.raw.shortbling,1);
-//                    soundPool.play(1,1, 1, 0, 0, 1);
-//                }else{
-//                    mEnableBling = true;
-//                    mBlingButton.setImageResource(R.drawable.bling_on_src);
-//                    soundPool.load(CircularProgressBarSample.this, R.raw.longbling,1);
-//                    soundPool.play(1,1, 1, 0, 0, 1);
-//                }
+
             }
         });
 
@@ -278,81 +276,63 @@ public class CircularProgressBarSample extends Activity {
         int myRed = Color.rgb(205,76, 76);
         mHoloCircularProgressBar.setProgressColor(myRed);
         mHoloCircularProgressBar.setProgressBackgroundColor(myWhite);
-        soundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 5);
         zeroAnimation.setDuration(500);
         oneAnimation.setDuration(500);
-    }
+        soundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 5);
+        soundPool.load(CircularProgressBarSample.this, R.raw.shortbling,1);
+        soundPool.load(CircularProgressBarSample.this, R.raw.longbling,2);
 
+
+        Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
+        mBlueConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mBlueBinder = (BluetoothService.BlueBinder)iBinder;
+                mBlueService = mBlueBinder.getService();
+                mBlueService.setOnBTStateListener(new BluetoothService.OnBTStateListener() {
+                    @Override
+                    public void onStateChanged(int state) {
+                        Log.d("qiqi", "state:" + state);
+                        switch (state){
+                            case BluetoothService.STATE_BT_OFF:
+                                blueToothState.setText(R.string.bluetooth_off);
+                                break;
+                            case BluetoothService.STATE_BT_ON:
+                                break;
+                            case BluetoothService.STATE_DISCONNECTED:
+                                blueToothState.setText(R.string.device_disconnected);
+                                break;
+                            case BluetoothService.STATE_CONNECTING:
+                                blueToothState.setText(R.string.device_connecting);
+                                break;
+                            case BluetoothService.STATE_CONNECTED:
+                                blueToothState.setText(R.string.device_connected);
+                                break;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+
+            }
+        };
+        bindService(intent, mBlueConn, Context.BIND_AUTO_CREATE);
+    }
     @Override
     protected void onResume() {
         super.onResume();
-        TextView blueToothState = (TextView) findViewById(R.id.device_state);
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(bluetoothAdapter != null){
-            if(bluetoothAdapter.isEnabled()){
-                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-                if (pairedDevices.size() > 0) {
-                    // Loop through paired devices
-                    for (BluetoothDevice device : pairedDevices) {
-                        // Add the name and address to an array adapter to show in a ListView
-                        Log.d("qiqi", device.getName() + " " + device.getAddress());
-                        if(device.getName().equals("RG-BLE-12")){
-                            mDevice = device;
-                        }
-                    }
-                    if(mDevice!=null){
-                        blueToothState.setText(R.string.device_connected);
-                    }else{
-                        blueToothState.setText(R.string.device_disconnected);
-                    }
-                }
-            }else{
-                blueToothState.setText(R.string.bluetooth_off);
-            }
-        }else{
-            blueToothState.setText(R.string.bluetooth_off);
-        }
+        blueToothState = (TextView) findViewById(R.id.device_state);
+
     }
-    private void setDeviceOn(boolean isOn){
-        BluetoothSocket tmp = null;
-        Method method;
-        if(mDevice == null)
-            return;
-        try {
-            method = mDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
-            tmp = (BluetoothSocket) method.invoke(mDevice, 1);
-        } catch (Exception e) {
-            Log.e("TAG", e.toString());
-        }
-        BluetoothSocket socket = null;
-        socket = tmp;
-        try {
-            socket.connect();
-            Log.d("qiqi", "connect:"+socket.isConnected());
-            OutputStream outStream = socket.getOutputStream();
-            if(isOn){
-                outStream.write(getHexBytes("AA000100045502100" + Integer.toHexString(mUserTime) +"0000CC33C33C"));
-                outStream.write(getHexBytes("AA000100045502100" + Integer.toHexString(mUserTime) +"0000CC33C33C"));
-            }else{
-                outStream.write(getHexBytes("AA0201000355011F0000CC33C33C"));
-                outStream.write(getHexBytes("AA0201000355011F0000CC33C33C"));
-            }
-            socket.close();
-        } catch (Exception e) {
-            Log.e("qiqi", e.toString());
-        }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mBlueConn);
     }
-    private byte[] getHexBytes(String message) {
-        int len = message.length() / 2;
-        char[] chars = message.toCharArray();
-        String[] hexStr = new String[len];
-        byte[] bytes = new byte[len];
-        for (int i = 0, j = 0; j < len; i += 2, j++) {
-            hexStr[j] = "" + chars[i] + chars[i + 1];
-            bytes[j] = (byte) Integer.parseInt(hexStr[j], 16);
-        }
-        return bytes;
-    }
+
     /**
      * generates random colors for the ProgressBar
      */
@@ -456,7 +436,6 @@ public class CircularProgressBarSample extends Activity {
                 float lastTime = (animation.getDuration() - animation.getCurrentPlayTime())/1000;
                 mTime.setText(makeTime(lastTime == 0.0f ? mUserTime : lastTime));
                 progressBar.setProgress(1.0f - (Float) animation.getAnimatedValue());
-                Log.d("qiqi","value:" + animation.getAnimatedValue());
             }
         });
         progressBar.setMarkerProgress(progress);
