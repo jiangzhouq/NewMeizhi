@@ -16,6 +16,7 @@ android {
             resources.srcDirs = ['src']
             res.srcDirs = ['res']
             java.srcDirs = ['src']
+            jniLibs.srcDirs = ['libs']
         }
     }
 }
@@ -28,4 +29,5 @@ dependencies {
     compile project(':libraries/SlidingMenu')
     compile project(':libraries/circleimageview')
     compile 'com.appyvet:materialrangebar:1.0'
+    compile 'com.umeng.analytics:analytics:latest.integration'
 }

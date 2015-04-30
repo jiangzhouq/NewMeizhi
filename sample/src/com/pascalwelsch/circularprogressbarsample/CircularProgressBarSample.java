@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.appyvet.rangebar.RangeBar;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.pascalwelsch.holocircularprogressbar.HoloCircularProgressBar;
+import com.umeng.update.UmengUpdateAgent;
 
 import org.w3c.dom.Text;
 
@@ -107,6 +108,7 @@ public class CircularProgressBarSample extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        UmengUpdateAgent.update(this);
         mHoloCircularProgressBar = (HoloCircularProgressBar) findViewById(
                 R.id.holoCircularProgressBar);
         mProfileImage = (CircleImageView) findViewById(R.id.profile_image);
