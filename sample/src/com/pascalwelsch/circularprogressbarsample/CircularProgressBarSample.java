@@ -407,7 +407,7 @@ public class CircularProgressBarSample extends Activity {
             final float progress, final int duration) {
 
         mProgressBarAnimator = ObjectAnimator.ofFloat(progressBar, "progress", progress);
-        mProgressBarAnimator.setDuration(duration/60);
+        mProgressBarAnimator.setDuration(duration);
 
         mProgressBarAnimator.addListener(new AnimatorListener() {
 

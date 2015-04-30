@@ -126,9 +126,9 @@ public class BluetoothService extends Service {
     private void setDeviceOn(boolean isOn, int time){
 
         try {
-            if(!mSocket.isConnected()){
-                createSocket();
-            }
+//            if(!mSocket.isConnected()){
+//                createSocket();
+//            }
             OutputStream outStream = mSocket.getOutputStream();
             if(isOn){
                 outStream.write(getHexBytes("AA000100045502100" + Integer.toHexString(time) +"0000CC33C33C"));
