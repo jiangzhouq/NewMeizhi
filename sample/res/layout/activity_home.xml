@@ -30,7 +30,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:id="@+id/state_1">
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profile_image"
@@ -49,6 +50,31 @@
             android:textColor="#cd5c5c"
             android:typeface="serif"
             android:text="@string/device_disconnected"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/state_2"
+        android:layout_below="@+id/state_1">
+        <TextView
+            android:id="@+id/device_state_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="20sp"
+            android:textColor="#f0f0f0"
+            android:typeface="serif"
+            android:text="@string/state_2_open_blue"/>
+        <ImageButton
+            android:id="@+id/blue_setting"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/blue_setting"
+            android:layout_toRightOf="@+id/device_state_2"
+            android:layout_marginLeft="20dp"
+            android:scaleType="centerInside"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
     <TextView
         android:id="@+id/time"

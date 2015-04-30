@@ -70,10 +70,10 @@ public class BluetoothService extends Service {
                     }
                 }
             }else{
-                notifyState(STATE_BT_OFF);
+                notifyState(STATE_DISCONNECTED);
             }
         }else{
-            notifyState(STATE_BT_OFF);
+            notifyState(STATE_DISCONNECTED);
         }
         return new BlueBinder();
     }

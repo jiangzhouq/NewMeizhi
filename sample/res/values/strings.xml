@@ -17,10 +17,14 @@
     <string name="btn_start">开始</string>
     <string name="btn_pause">暂停</string>
     <string name="btn_end">停止</string>
-    <string name="btn_bling">声音</string>
+    <string name="btn_bling">声音:开</string>
+    <string name="btn_bling_off">声音:关</string>
+    <string name="btn_restart">复位</string>
     <string name="rangbar_notify">请滑动选择治疗时间</string>
     <string name="bluetooth_off">蓝牙未开启</string>
     <string name="device_disconnected">设备未连接</string>
     <string name="device_connecting">设备正在连接中</string>
     <string name="device_connected">设备已连接</string>
+    <string name="state_2_reconnect">请重新连接</string>
+    <string name="state_2_open_blue">请打开蓝牙</string>
 </resources>
