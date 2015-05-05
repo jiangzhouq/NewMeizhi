@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/bitmap_dark_bg"
+    android:background="#FFC0CB"
     tools:context=".CircularProgressBarSample">
 
     <ScrollView
@@ -62,14 +62,13 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textSize="20sp"
-            android:textColor="#f0f0f0"
             android:typeface="serif"
             android:text="@string/state_2_open_blue"/>
         <ImageButton
             android:id="@+id/blue_setting"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:background="@android:color/transparent"
+            android:background="#FFC0CB"
             android:src="@drawable/blue_setting"
             android:layout_toRightOf="@+id/device_state_2"
             android:layout_marginLeft="20dp"
@@ -90,7 +89,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/buttons"
         android:layout_below="@+id/progress"
-        android:background="@android:color/transparent"
+        android:background="#FFC0CB"
         android:layout_marginTop="40dp">
         <RelativeLayout
             android:id="@+id/button_left"
@@ -103,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:background="@android:color/transparent"
+                android:background="#FFC0CB"
                 android:src="@drawable/start_src"/>
             <TextView
                 android:id="@+id/start_text"
@@ -124,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:background="@android:color/transparent"
+                android:background="#FFC0CB"
                 android:src="@drawable/stop_src"/>
             <TextView
                 android:id="@+id/end_text"
@@ -146,13 +145,14 @@
                 android:id="@+id/bling"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:background="#FFC0CB"
                 android:src="@drawable/bling_on_src"/>
             <TextView
                 android:id="@+id/bling_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_bling"
+                android:textColor="@android:color/white"
                 android:layout_centerHorizontal="true"
                 android:textSize="14sp"
                 android:layout_below="@+id/bling"/>

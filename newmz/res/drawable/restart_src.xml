@@ -6,10 +6,10 @@
         </item>
         <item
             android:state_pressed="true"
-            android:drawable="@drawable/restart_p">
+            android:drawable="@drawable/restart_d">
         </item>
         <item
             android:state_window_focused="true"
-            android:drawable="@drawable/restart_p">
+            android:drawable="@drawable/restart_d">
         </item>
     </selector>

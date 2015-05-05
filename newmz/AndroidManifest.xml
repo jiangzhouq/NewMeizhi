@@ -29,7 +29,7 @@
         android:theme="@style/AppTheme" >
         <meta-data android:value="5541f61867e58e03c2002f0e" android:name="UMENG_APPKEY"/>
         <activity
-            android:name=".CircularProgressBarSample"
+            android:name=".NewMeizhi"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >

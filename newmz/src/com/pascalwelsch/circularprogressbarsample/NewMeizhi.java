@@ -32,8 +32,6 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.pascalwelsch.holocircularprogressbar.HoloCircularProgressBar;
 import com.umeng.update.UmengUpdateAgent;
 
-import org.w3c.dom.Text;
-
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -44,9 +42,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * @author Pascal Welsch
  * @since 05.03.2013
  */
-public class CircularProgressBarSample extends Activity {
+public class NewMeizhi extends Activity {
 
-    private static final String TAG = CircularProgressBarSample.class.getSimpleName();
+    private static final String TAG = NewMeizhi.class.getSimpleName();
 
     private final int STATE_NULL = 0;
     private final int STATE_END = 1;
@@ -167,7 +165,7 @@ public class CircularProgressBarSample extends Activity {
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu);
         mStartButton = (ImageButton) findViewById(R.id.start);
-        mStartButton.setImageResource(R.drawable.start_d);
+        mStartButton.setImageResource(R.drawable.start_p);
         mStartButton.setEnabled(false);
         mStartTextView.setTextColor(Color.rgb(124, 124, 124));
         mStartButton.setOnClickListener(new OnClickListener() {
@@ -215,7 +213,7 @@ public class CircularProgressBarSample extends Activity {
                         mStartButton.setImageResource(R.drawable.pause_src);
                         mStartTextView.setText(R.string.btn_pause);
                         mEndButton.setImageResource(R.drawable.stop_src);
-                        mEndTextView.setTextColor(Color.LTGRAY);
+                        mEndTextView.setTextColor(Color.rgb(255,255,240));
                         mEndButton.setEnabled(true);
                         if(mBlueBinder != null){
                             mBlueBinder.start(mUserTime);
@@ -246,7 +244,7 @@ public class CircularProgressBarSample extends Activity {
 
         mEndButton = (ImageButton) findViewById(R.id.end);
         mEndButton.setEnabled(false);
-        mEndButton.setImageResource(R.drawable.stop_d);
+        mEndButton.setImageResource(R.drawable.stop_p);
         mEndTextView.setTextColor(Color.rgb(124,124,124));
         mEndButton.setOnClickListener(new OnClickListener() {
 
@@ -259,7 +257,7 @@ public class CircularProgressBarSample extends Activity {
                 mState = STATE_NULL;
                 finalProgress = 1.0f;
                 soundPool.stop(mSoundFlag);
-                mEndButton.setImageResource(R.drawable.stop_d);
+                mEndButton.setImageResource(R.drawable.stop_p);
                 mEndTextView.setText(R.string.btn_end);
                 mEndTextView.setTextColor(Color.rgb(124, 124, 124));
                 mEndButton.setEnabled(false);
@@ -331,15 +329,15 @@ public class CircularProgressBarSample extends Activity {
                 }
             }
         });
-        int myWhite = Color.rgb(255, 255, 240);
-        int myRed = Color.rgb(205,76, 76);
+        int myWhite = Color.rgb(255, 192, 203);
+        int myRed = Color.rgb(255,255, 240);
         mHoloCircularProgressBar.setProgressColor(myRed);
         mHoloCircularProgressBar.setProgressBackgroundColor(myWhite);
         zeroAnimation.setDuration(500);
         oneAnimation.setDuration(500);
         soundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 5);
-        soundPool.load(CircularProgressBarSample.this, R.raw.shortbling,1);
-        soundPool.load(CircularProgressBarSample.this, R.raw.longbling,2);
+        soundPool.load(NewMeizhi.this, R.raw.shortbling,1);
+        soundPool.load(NewMeizhi.this, R.raw.longbling,2);
 
 
         Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
@@ -376,7 +374,7 @@ public class CircularProgressBarSample extends Activity {
                                 blueToothState.setText(R.string.device_connected);
                                 mStartButton.setEnabled(true);
                                 mStartButton.setImageResource(R.drawable.start_src);
-                                mStartTextView.setTextColor(Color.LTGRAY);
+                                mStartTextView.setTextColor(Color.rgb(255,255,240));
                                 mState2Layout.setVisibility(View.GONE);
                                 break;
                         }
