@@ -25,6 +25,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.appyvet.rangebar.RangeBar;
@@ -49,7 +50,6 @@ public class NewMeizhi extends Activity {
     private final int STATE_NULL = 0;
     private final int STATE_END = 1;
     private final int STATE_RUNNING = 2;
-    private final int STATE_PAUSING =3;
 
     private int mState = STATE_NULL;
     private boolean mEnableBling = true;
@@ -165,8 +165,8 @@ public class NewMeizhi extends Activity {
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu);
         mStartButton = (ImageButton) findViewById(R.id.start);
-        mStartButton.setImageResource(R.drawable.start_p);
-        mStartButton.setEnabled(false);
+        mStartButton.setImageResource(R.drawable.start_src);
+//        mStartButton.setEnabled(false);
         mStartTextView.setTextColor(Color.rgb(124, 124, 124));
         mStartButton.setOnClickListener(new OnClickListener() {
 
@@ -182,60 +182,23 @@ public class NewMeizhi extends Activity {
 //                        if (mProgressBarAnimator != null) {
 //                            mProgressBarAnimator.cancel();
 //                        }
-
-                        mHoloCircularProgressBar.setProgress(1.0f);
-                        animate(mHoloCircularProgressBar, new AnimatorListener() {
-                            @Override
-                            public void onAnimationCancel(final Animator animation) {
-                                animation.end();
-                            }
-
-                            @Override
-                            public void onAnimationEnd(final Animator animation) {
-                                mStartButton.setImageResource(R.drawable.start_src);
-                                mEndButton.setImageResource(R.drawable.restart_src);
-                                mEndTextView.setText(R.string.btn_restart);
-                                mState = STATE_END;
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(final Animator animation) {
-                            }
-
-                            @Override
-                            public void onAnimationStart(final Animator animation) {
-                            }
-                        }, 0.0f, mUserTime*1000);
+                        start();
                         mState = STATE_RUNNING;
-                        if (soundPool != null && mEnableBling){
-                            mSoundFlag = soundPool.play(1,0.2f,0.2f,0,-1,1);
-                        }
-                        mStartButton.setImageResource(R.drawable.pause_src);
-                        mStartTextView.setText(R.string.btn_pause);
-                        mEndButton.setImageResource(R.drawable.stop_src);
-                        mEndTextView.setTextColor(Color.rgb(255,255,240));
-                        mEndButton.setEnabled(true);
-                        if(mBlueBinder != null){
-                            mBlueBinder.start(mUserTime);
-                        }
+                        break;
+                    case STATE_END:
+                        stop();
+                        mState = STATE_NULL;
                         break;
                     case STATE_RUNNING:
-                        mProgressBarAnimator.pause();
-                        mStartButton.setImageResource(R.drawable.start_src);
-                        mStartTextView.setText(R.string.btn_start);
-                        if (soundPool != null){
-                            soundPool.pause(mSoundFlag);
-                        }
-                        mState = STATE_PAUSING;
-                        break;
-                    case STATE_PAUSING:
-                        mProgressBarAnimator.resume();
-                        if (soundPool != null){
-                            soundPool.resume(mSoundFlag);
-                        }
-                        mStartButton.setImageResource(R.drawable.pause_src);
-                        mStartTextView.setText(R.string.btn_pause);
-                        mState = STATE_RUNNING;
+                        stop();
+                        mState = STATE_NULL;
+//                        mProgressBarAnimator.pause();
+//                        mStartButton.setImageResource(R.drawable.start_src);
+//                        mStartTextView.setText(R.string.btn_start);
+//                        if (soundPool != null){
+//                            soundPool.stop(mSoundFlag);
+//                        }
+//                        mState = STATE_PAUSING;
                         break;
 
                 }
@@ -250,34 +213,7 @@ public class NewMeizhi extends Activity {
 
             @Override
             public void onClick(View v) {
-                if(mState == STATE_END){
-                }
-                finalProgress = mHoloCircularProgressBar.getProgress();
-                mProgressBarAnimator.cancel();
-                mState = STATE_NULL;
-                finalProgress = 1.0f;
-                soundPool.stop(mSoundFlag);
-                mEndButton.setImageResource(R.drawable.stop_p);
-                mEndTextView.setText(R.string.btn_end);
-                mEndTextView.setTextColor(Color.rgb(124, 124, 124));
-                mEndButton.setEnabled(false);
-                mProgressBarAnimator = ObjectAnimator.ofFloat(mHoloCircularProgressBar, "progress", 1.0f);
-                mProgressBarAnimator.setDuration(500);
-                mProgressBarAnimator.reverse();
-                mTime.setText(makeTime(mUserTime));
-                mProgressBarAnimator.addUpdateListener(new AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(final ValueAnimator animation) {
-                        float lastTime = (animation.getDuration() - animation.getCurrentPlayTime())/1000;
-                        mHoloCircularProgressBar.setProgress(1.0f - (Float) animation.getAnimatedValue());
-                    }
-                });
-                mHoloCircularProgressBar.setMarkerProgress(1.0f);
-                mProgressBarAnimator.start();
-
-                if(mBlueBinder != null){
-                    mBlueBinder.stop();
-                }
+                stop();
             }
         });
 
@@ -292,8 +228,6 @@ public class NewMeizhi extends Activity {
                     switch(mState){
                         case STATE_END:
                             break;
-                        case STATE_PAUSING:
-                            break;
                         case STATE_RUNNING:
                             if (soundPool != null){
                                 soundPool.stop(mSoundFlag);
@@ -307,8 +241,6 @@ public class NewMeizhi extends Activity {
                     switch(mState){
                         case STATE_END:
                             break;
-                        case STATE_PAUSING:
-                            break;
                         case STATE_RUNNING:
                             if (soundPool != null){
                                 mSoundFlag = soundPool.play(1,0.2f,0.2f,0,-1,1);
@@ -321,7 +253,15 @@ public class NewMeizhi extends Activity {
 
         mTime = (TextView) findViewById(R.id.time);
         mTime.setText(makeTime(mUserTime));
-        mTime.setOnClickListener(new OnClickListener(){
+//        mTime.setOnClickListener(new OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                if(mState == STATE_NULL){
+//                    showUserTimeSelector(!isUserTimeSelectorShow);
+//                }
+//            }
+//        });
+        mHoloCircularProgressBar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mState == STATE_NULL){
@@ -329,6 +269,8 @@ public class NewMeizhi extends Activity {
                 }
             }
         });
+
+
         int myWhite = Color.rgb(255, 192, 203);
         int myRed = Color.rgb(255,255, 240);
         mHoloCircularProgressBar.setProgressColor(myRed);
@@ -340,55 +282,120 @@ public class NewMeizhi extends Activity {
         soundPool.load(NewMeizhi.this, R.raw.longbling,2);
 
 
-        Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
-        mBlueConn = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                mBlueBinder = (BluetoothService.BlueBinder)iBinder;
-                mBlueService = mBlueBinder.getService();
-                mBlueService.setOnBTStateListener(new BluetoothService.OnBTStateListener() {
-                    @Override
-                    public void onStateChanged(int state) {
-                        Log.d("qiqi", "state:" + state);
-                        switch (state){
-                            case BluetoothService.STATE_BT_OFF:
-                                blueToothState.setText(R.string.bluetooth_off);
-                                mStartButton.setEnabled(false);
-                                mState2Layout.setVisibility(View.VISIBLE);
-                                mState2.setText(R.string.state_2_open_blue);
-                                break;
-                            case BluetoothService.STATE_BT_ON:
-                                break;
-                            case BluetoothService.STATE_DISCONNECTED:
-                                blueToothState.setText(R.string.device_disconnected);
-                                mStartButton.setEnabled(false);
-                                mState2Layout.setVisibility(View.VISIBLE);
-                                mState2.setText(R.string.state_2_reconnect);
-                                break;
-                            case BluetoothService.STATE_CONNECTING:
-                                blueToothState.setText(R.string.device_connecting);
-                                mStartButton.setEnabled(false);
-                                mState2Layout.setVisibility(View.GONE);
-                                break;
-                            case BluetoothService.STATE_CONNECTED:
-                                blueToothState.setText(R.string.device_connected);
-                                mStartButton.setEnabled(true);
-                                mStartButton.setImageResource(R.drawable.start_src);
-                                mStartTextView.setTextColor(Color.rgb(255,255,240));
-                                mState2Layout.setVisibility(View.GONE);
-                                break;
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-
-            }
-        };
-        bindService(intent, mBlueConn, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
+//        mBlueConn = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+//                mBlueBinder = (BluetoothService.BlueBinder)iBinder;
+//                mBlueService = mBlueBinder.getService();
+//                mBlueService.setOnBTStateListener(new BluetoothService.OnBTStateListener() {
+//                    @Override
+//                    public void onStateChanged(int state) {
+//                        Log.d("qiqi", "state:" + state);
+//                        switch (state){
+//                            case BluetoothService.STATE_BT_OFF:
+//                                blueToothState.setText(R.string.bluetooth_off);
+//                                mStartButton.setEnabled(false);
+//                                mState2Layout.setVisibility(View.VISIBLE);
+//                                mState2.setText(R.string.state_2_open_blue);
+//                                break;
+//                            case BluetoothService.STATE_BT_ON:
+//                                break;
+//                            case BluetoothService.STATE_DISCONNECTED:
+//                                blueToothState.setText(R.string.device_disconnected);
+//                                mStartButton.setEnabled(false);
+//                                mState2Layout.setVisibility(View.VISIBLE);
+//                                mState2.setText(R.string.state_2_reconnect);
+//                                break;
+//                            case BluetoothService.STATE_CONNECTING:
+//                                blueToothState.setText(R.string.device_connecting);
+//                                mStartButton.setEnabled(false);
+//                                mState2Layout.setVisibility(View.GONE);
+//                                break;
+//                            case BluetoothService.STATE_CONNECTED:
+//                                blueToothState.setText(R.string.device_connected);
+//                                mStartButton.setEnabled(true);
+//                                mStartButton.setImageResource(R.drawable.start_src);
+//                                mStartTextView.setTextColor(Color.rgb(255,255,240));
+//                                mState2Layout.setVisibility(View.GONE);
+//                                break;
+//                        }
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName componentName) {
+//
+//            }
+//        };
+//        bindService(intent, mBlueConn, Context.BIND_AUTO_CREATE);
     }
+
+    private void stop(){
+        finalProgress = mHoloCircularProgressBar.getProgress();
+        mProgressBarAnimator.cancel();
+        finalProgress = 1.0f;
+        soundPool.stop(mSoundFlag);
+        mProgressBarAnimator = ObjectAnimator.ofFloat(mHoloCircularProgressBar, "progress", 1.0f);
+        mProgressBarAnimator.setDuration(500);
+        mProgressBarAnimator.reverse();
+        mTime.setText(makeTime(mUserTime));
+        mProgressBarAnimator.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(final ValueAnimator animation) {
+                float lastTime = (animation.getDuration() - animation.getCurrentPlayTime())/1000;
+                mHoloCircularProgressBar.setProgress(1.0f - (Float) animation.getAnimatedValue());
+            }
+        });
+        mHoloCircularProgressBar.setMarkerProgress(1.0f);
+        mProgressBarAnimator.start();
+
+        if(mBlueBinder != null){
+            mBlueBinder.stop();
+        }
+        mStartButton.setImageResource(R.drawable.start_src);
+        mStartTextView.setText(R.string.btn_start);
+    }
+    private void start(){
+        mHoloCircularProgressBar.setProgress(1.0f);
+        animate(mHoloCircularProgressBar, new AnimatorListener() {
+            @Override
+            public void onAnimationCancel(final Animator animation) {
+                animation.end();
+            }
+
+            @Override
+            public void onAnimationEnd(final Animator animation) {
+                mStartButton.setImageResource(R.drawable.restart_src);
+                mStartTextView.setText(R.string.btn_restart);
+                mState = STATE_END;
+            }
+
+            @Override
+            public void onAnimationRepeat(final Animator animation) {
+            }
+
+            @Override
+            public void onAnimationStart(final Animator animation) {
+            }
+        }, 0.0f, mUserTime*1000);
+        if (soundPool != null && mEnableBling){
+            mSoundFlag = soundPool.play(1,0.2f,0.2f,0,-1,1);
+        }
+        mStartButton.setImageResource(R.drawable.stop_src);
+        mStartTextView.setText(R.string.btn_end);
+        if(mBlueBinder != null){
+            mBlueBinder.start(mUserTime);
+        }
+    }
+    private void enableBling(){
+
+    }
+    private void disableBling(){
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -412,55 +419,6 @@ public class NewMeizhi extends Activity {
 
         randomColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
         mHoloCircularProgressBar.setProgressBackgroundColor(randomColor);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.circular_progress_bar_sample, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.menu_switch_theme:
-                switchTheme();
-                break;
-
-            default:
-                Log.w(TAG, "couldn't map a click action for " + item);
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Switch theme.
-     */
-    public void switchTheme() {
-
-        final Intent intent = getIntent();
-        final Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            final int theme = extras.getInt("theme", -1);
-            if (theme == R.style.AppThemeLight) {
-                getIntent().removeExtra("theme");
-            } else {
-                intent.putExtra("theme", R.style.AppThemeLight);
-            }
-        } else {
-            intent.putExtra("theme", R.style.AppThemeLight);
-        }
-        finish();
-        startActivity(intent);
     }
 
     /**
