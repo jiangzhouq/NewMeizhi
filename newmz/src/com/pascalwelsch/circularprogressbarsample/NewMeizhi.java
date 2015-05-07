@@ -53,12 +53,14 @@ public class NewMeizhi extends Activity {
 
     private int mState = STATE_NULL;
     private boolean mEnableBling = true;
+    //false = red ; true = blue;
+    private boolean mLightState = false;
 
     /**
      * The Switch button.
      */
     private ImageButton mStartButton;
-    private ImageButton mEndButton;
+    private ImageButton mLightButton;
     private ImageButton mBlingButton;
 
     private TextView mTime ;
@@ -68,7 +70,7 @@ public class NewMeizhi extends Activity {
     private RelativeLayout mButtonsLayout;
     private RelativeLayout mRangeBarLayout;
     private boolean mPaused = false;
-    private TextView mEndTextView;
+    private TextView mLightTextView;
     private TextView mStartTextView;
     private TextView mBlingTextView;
     private RangeBar mRangeBar;
@@ -116,7 +118,7 @@ public class NewMeizhi extends Activity {
                 menu.toggle();
             }
         });
-        mEndTextView = (TextView) findViewById(R.id.end_text);
+        mLightTextView = (TextView) findViewById(R.id.light_text);
         mBlueSetting = (ImageButton) findViewById(R.id.blue_setting);
         mBlueSetting.setOnClickListener(new OnClickListener() {
             @Override
@@ -166,7 +168,7 @@ public class NewMeizhi extends Activity {
         menu.setMenu(R.layout.menu);
         mStartButton = (ImageButton) findViewById(R.id.start);
         mStartButton.setImageResource(R.drawable.start_src);
-//        mStartButton.setEnabled(false);
+        mStartButton.setEnabled(false);
         mStartTextView.setTextColor(Color.rgb(124, 124, 124));
         mStartButton.setOnClickListener(new OnClickListener() {
 
@@ -205,15 +207,20 @@ public class NewMeizhi extends Activity {
             }
         });
 
-        mEndButton = (ImageButton) findViewById(R.id.end);
-        mEndButton.setEnabled(false);
-        mEndButton.setImageResource(R.drawable.stop_p);
-        mEndTextView.setTextColor(Color.rgb(124,124,124));
-        mEndButton.setOnClickListener(new OnClickListener() {
+        mLightButton = (ImageButton) findViewById(R.id.light);
+        mLightButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                stop();
+                if(mLightState){
+                    mLightButton.setImageResource(R.drawable.red_src);
+                    mLightTextView.setText(R.string.light_red);
+                    mLightState = false;
+                }else{
+                    mLightButton.setImageResource(R.drawable.blue_src);
+                    mLightTextView.setText(R.string.light_blue);
+                    mLightState = true;
+                }
             }
         });
 
@@ -282,54 +289,54 @@ public class NewMeizhi extends Activity {
         soundPool.load(NewMeizhi.this, R.raw.longbling,2);
 
 
-//        Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
-//        mBlueConn = new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//                mBlueBinder = (BluetoothService.BlueBinder)iBinder;
-//                mBlueService = mBlueBinder.getService();
-//                mBlueService.setOnBTStateListener(new BluetoothService.OnBTStateListener() {
-//                    @Override
-//                    public void onStateChanged(int state) {
-//                        Log.d("qiqi", "state:" + state);
-//                        switch (state){
-//                            case BluetoothService.STATE_BT_OFF:
-//                                blueToothState.setText(R.string.bluetooth_off);
-//                                mStartButton.setEnabled(false);
-//                                mState2Layout.setVisibility(View.VISIBLE);
-//                                mState2.setText(R.string.state_2_open_blue);
-//                                break;
-//                            case BluetoothService.STATE_BT_ON:
-//                                break;
-//                            case BluetoothService.STATE_DISCONNECTED:
-//                                blueToothState.setText(R.string.device_disconnected);
-//                                mStartButton.setEnabled(false);
-//                                mState2Layout.setVisibility(View.VISIBLE);
-//                                mState2.setText(R.string.state_2_reconnect);
-//                                break;
-//                            case BluetoothService.STATE_CONNECTING:
-//                                blueToothState.setText(R.string.device_connecting);
-//                                mStartButton.setEnabled(false);
-//                                mState2Layout.setVisibility(View.GONE);
-//                                break;
-//                            case BluetoothService.STATE_CONNECTED:
-//                                blueToothState.setText(R.string.device_connected);
-//                                mStartButton.setEnabled(true);
-//                                mStartButton.setImageResource(R.drawable.start_src);
-//                                mStartTextView.setTextColor(Color.rgb(255,255,240));
-//                                mState2Layout.setVisibility(View.GONE);
-//                                break;
-//                        }
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName componentName) {
-//
-//            }
-//        };
-//        bindService(intent, mBlueConn, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent("com.pascalwelsch.circularprogressbarsample.BLUE_SERVICE");
+        mBlueConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mBlueBinder = (BluetoothService.BlueBinder)iBinder;
+                mBlueService = mBlueBinder.getService();
+                mBlueService.setOnBTStateListener(new BluetoothService.OnBTStateListener() {
+                    @Override
+                    public void onStateChanged(int state) {
+                        Log.d("qiqi", "state:" + state);
+                        switch (state){
+                            case BluetoothService.STATE_BT_OFF:
+                                blueToothState.setText(R.string.bluetooth_off);
+                                mStartButton.setEnabled(false);
+                                mState2Layout.setVisibility(View.VISIBLE);
+                                mState2.setText(R.string.state_2_open_blue);
+                                break;
+                            case BluetoothService.STATE_BT_ON:
+                                break;
+                            case BluetoothService.STATE_DISCONNECTED:
+                                blueToothState.setText(R.string.device_disconnected);
+                                mStartButton.setEnabled(false);
+                                mState2Layout.setVisibility(View.VISIBLE);
+                                mState2.setText(R.string.state_2_reconnect);
+                                break;
+                            case BluetoothService.STATE_CONNECTING:
+                                blueToothState.setText(R.string.device_connecting);
+                                mStartButton.setEnabled(false);
+                                mState2Layout.setVisibility(View.GONE);
+                                break;
+                            case BluetoothService.STATE_CONNECTED:
+                                blueToothState.setText(R.string.device_connected);
+                                mStartButton.setEnabled(true);
+                                mStartButton.setImageResource(R.drawable.start_src);
+                                mStartTextView.setTextColor(Color.rgb(255,255,240));
+                                mState2Layout.setVisibility(View.GONE);
+                                break;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+
+            }
+        };
+        bindService(intent, mBlueConn, Context.BIND_AUTO_CREATE);
     }
 
     private void stop(){
@@ -432,7 +439,7 @@ public class NewMeizhi extends Activity {
             final float progress, final int duration) {
 
         mProgressBarAnimator = ObjectAnimator.ofFloat(progressBar, "progress", progress);
-        mProgressBarAnimator.setDuration(duration/60);
+        mProgressBarAnimator.setDuration(duration);
 
         mProgressBarAnimator.addListener(new AnimatorListener() {
 

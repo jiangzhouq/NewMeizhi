@@ -119,21 +119,21 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true">
             <ImageButton
-                android:id="@+id/end"
+                android:id="@+id/light"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:background="#FFC0CB"
-                android:src="@drawable/stop_src"/>
+                android:src="@drawable/red_src"/>
             <TextView
-                android:id="@+id/end_text"
+                android:id="@+id/light_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:textSize="14sp"
-                android:textColor="#7c7c7c"
-                android:text="@string/btn_end"
-                android:layout_below="@+id/end"/>
+                android:textColor="#fffff0"
+                android:text="@string/light_red"
+                android:layout_below="@+id/light"/>
         </RelativeLayout>
         <RelativeLayout
             android:id="@+id/button_right"
@@ -152,7 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_bling"
-                android:textColor="@android:color/white"
+                android:textColor="#fffff0"
                 android:layout_centerHorizontal="true"
                 android:textSize="14sp"
                 android:layout_below="@+id/bling"/>

@@ -27,4 +27,6 @@
     <string name="device_connected">设备已连接</string>
     <string name="state_2_reconnect">请重新连接</string>
     <string name="state_2_open_blue">请打开蓝牙</string>
+    <string name="light_red">红光</string>
+    <string name="light_blue">蓝光</string>
 </resources>
